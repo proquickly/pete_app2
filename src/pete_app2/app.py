@@ -5,11 +5,11 @@ valid_html = """
 <html>
 <h1>
 blah
-<h2>
-</h2>
 </h1>
 </html>
 """
+
+print(valid_html)  # Prints the content of valid_html
 
 invalid_html = """
 <html>
@@ -17,53 +17,36 @@ invalid_html = """
 </h1>
 """
 
+print(invalid_html)  # Prints the content of invalid_html
+
 
 class Stack:
-
     def __init__(self):
-        self.the_stack = []
-        self.size = len(self.the_stack)
+        self.stack = []
 
     def push(self, stack_item):
-        self.size += 1
-        self.the_stack.append(stack_item)
+        self.stack.append(stack_item)
 
     def pop(self):
         if not self.is_empty():
-            last_in = self.the_stack[-1]
-            del self.the_stack[-1]
-            return last_in
-        return None
-
-    def peek(self):
-        return self.the_stack[-1]
-
-    def size(self):
-        self.size == len(self.the_stack)
-        return self.size
-
-    def is_empty(self):
-        if self.size == 0:
-            return True
-        return False
+            return self.stack.pop()
 
 
 def html_checker(html):
     checker = Stack()
     for line in html.split("\n"):
-        if "</" in line:
-            if checker.is_empty():
-                return False
-            elif ">" in line:
-                tag = checker.pop()
-                if line[2:-1] != tag:
+        if "<" in line and ">" in line:
+            tag = line[line.index('<') + 1:line.index('>')]
+            if tag.startswith('/'):  # This is a close tag
+                if checker.is_empty():
                     return False
-        elif "<" in line:
-            if ">" in line:
-                checker.push(line[1:-1])
-    return True
+                elif tag[1:] != checker.pop():
+                    return False
+            else:  # This is an open tag
+                checker.push(tag)
+    return checker.is_empty()
 
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     for html in [valid_html, invalid_html]:
         print(html_checker(html))
