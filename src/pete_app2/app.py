@@ -28,8 +28,7 @@ class Stack:
         self.stack.append(stack_item)
 
     def pop(self):
-        if not self.is_empty():
-            return self.stack.pop()
+        return self.stack.pop() if self.stack else None
 
 
 def html_checker(html):
@@ -38,13 +37,11 @@ def html_checker(html):
         if "<" in line and ">" in line:
             tag = line[line.index('<') + 1:line.index('>')]
             if tag.startswith('/'):  # This is a close tag
-                if checker.is_empty():
-                    return False
-                elif tag[1:] != checker.pop():
+                if not checker.stack or tag[1:] != checker.pop():
                     return False
             else:  # This is an open tag
                 checker.push(tag)
-    return checker.is_empty()
+    return len(checker.stack) == 0
 
 
 if __name__ == "__main__":
